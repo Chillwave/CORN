@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Manage Issues</h2>
+<ul>
+    {% for issue in issues %}
+    <li>
+        <p>Description: {{ issue.description }}</p>
+        <p>Place: {{ issue.place }}</p>
+        <p>Reported by: {{ issue.username }}</p>
+        {% if issue.attachment_url %}
+        <p>Attachment: <a href="{{ url_for('uploaded_file', filename=issue.attachment_url.split('/')[-1]) }}" target="_blank">View Attachment</a></p>
+        {% endif %}
+        <form action="{{ url_for('resolve_issue', case_number=issue.case_number) }}" method="POST">
+            <input type="submit" value="Resolve Issue">
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Community OutReach Network</h2>
+<div id="map" style="height: 500px; width: 100%;"></div>
+<ul>
+    {% for issue in issues %}
+    <li>{{ issue.description }} - {{ issue.place }} - Reported by: {{ issue.username }}</li>
+    {% endfor %}
+</ul>
+
+<!-- Include the Places API JavaScript library -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initMap" async defer></script>
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 25.7503, lng: -80.3779},
+            zoom: 15
+        });
+
+        // Convert issues from Jinja template to JSON for JavaScript
+        var issues = {{ issues | tojson | safe }};
+        
+        issues.forEach(function(issue) {
+            var place = issue.place;
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ 'address': place }, function(results, status) {
+                if (status === 'OK') {
+                    new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location,
+                        title: issue.description
+                    });
+                } else {
+                    console.error('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof google !== 'undefined' && google.maps) {
+            initMap();
+        } else {
+            var interval = setInterval(function() {
+                if (typeof google !== 'undefined' && google.maps) {
+                    clearInterval(interval);
+                    initMap();
+                }
+            }, 100);
+        }
+    });
+</script>
+{% endblock %}

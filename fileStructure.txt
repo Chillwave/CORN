@@ -1,0 +1,8 @@
+community-helper-app/
+├── app.py
+├── config.py
+├── models.py
+├── routes.py
+├── schemas.py
+├── services.py
+└── __init__.py

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Report Issue</h2>
+<form action="{{ url_for('report_issue') }}" method="POST" enctype="multipart/form-data">
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
+    
+    <label for="place">Place:</label>
+    <input type="text" id="place-input" name="place" required>
+    
+    <label for="attachment">Attachment:</label>
+    <input type="file" id="attachment" name="attachment">
+
+    <input type="submit" value="Report Issue">
+</form>
+
+<!-- Include the Places API JavaScript library -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initAutocomplete" async defer></script>
+<script>
+    function initAutocomplete() {
+        var input = document.getElementById('place-input');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        
+        // Restrict the search to the scope of this map
+        autocomplete.setComponentRestrictions({'country': []});
+
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                alert("No details available for input: '" + place.name + "'");
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof google !== 'undefined' && google.maps) {
+            initAutocomplete();
+        } else {
+            var interval = setInterval(function() {
+                if (typeof google !== 'undefined' && google.maps) {
+                    clearInterval(interval);
+                    initAutocomplete();
+                }
+            }, 100);
+        }
+    });
+</script>
+{% endblock %}
