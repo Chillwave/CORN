@@ -11,7 +11,6 @@ from datetime import datetime
 # Set up basic logging
 logging.basicConfig(level=logging.DEBUG)
 
-# OAuth Configuration with Auth0
 oauth = OAuth(app)
 
 auth0 = oauth.register(
@@ -21,17 +20,14 @@ auth0 = oauth.register(
     api_base_url=f"https://{app.config['AUTH0_DOMAIN']}",
     access_token_url=f"https://{app.config['AUTH0_DOMAIN']}/oauth/token",
     authorize_url=f"https://{app.config['AUTH0_DOMAIN']}/authorize",
+    jwks_uri=f"https://{app.config['AUTH0_DOMAIN']}/.well-known/jwks.json",
     client_kwargs={'scope': 'openid profile email'}
 )
 
-# Upload folder configuration
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure the upload path exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
